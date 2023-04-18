@@ -1,1 +1,1 @@
-# stepik_selenium_page_object
+This repository will contain tests created using Page Object ModelS
