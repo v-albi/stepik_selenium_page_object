@@ -1,1 +1,1 @@
-This repository will contain tests created using Page Object ModelS
+This repository will contain tests created using Page Object Model
