@@ -1,12 +1,42 @@
 from selenium.webdriver.common.by import By
 from pages.product_page import ProductPage
 from pages.basket_page import BasketPage
+from pages.login_page import LoginPage
+from pages.base_page import BasePage
 import pytest
+import time
 
 
-@pytest.mark.parametrize(
-    'offers',
-    ["?promo=offer0", "?promo=offer1", "?promo=offer2", "?promo=offer3", "?promo=offer4", "?promo=offer5", "?promo=offer6", pytest.param("?promo=offer7", marks=pytest.mark.xfail), "?promo=offer8", "?promo=offer9"])
+# @pytest.mark.parametrize(
+    # 'offers',
+    #["?promo=offer0", "?promo=offer1", "?promo=offer2", "?promo=offer3", "?promo=offer4", "?promo=offer5", "?promo=offer6", pytest.param("?promo=offer7", marks=pytest.mark.xfail), "?promo=offer8", "?promo=offer9"])
+
+@pytest.mark.basket_user
+class TestUserAddToBasketFromProductPage():
+    @pytest.fixture(scope="function", autouse=True)
+    def setup(self, browser):
+        link = "http://selenium1py.pythonanywhere.com/ru/accounts/login/"
+        email = str(time.time()) + "@email.org"
+        password = str(time.time()) + "abcdef"
+        self.page = LoginPage(browser, link)
+        self.page.open()
+        self.page.register_new_user(email, password)
+        self.page.should_be_authorized_user()
+
+    def test_user_cant_see_success_message(self, browser):
+        link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
+        self.page = ProductPage(browser, link)
+        self.page.open()
+        self.page.should_not_be_success_message()
+
+    def test_user_can_add_product_to_basket(self, browser):
+        link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
+        self.page = ProductPage(browser, link)
+        self.page.open()
+        self.page.add_to_basket()
+        self.page.check_book_names()
+        self.page.check_book_prices()
+
 
 def test_guest_can_add_product_to_basket(browser, offers):
     link = f"http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/{offers}"
